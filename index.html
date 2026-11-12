@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo Online</title>
+  <style>
+    :root {
+      --primary: #14532d;       /* Cor principal (alterada via CONFIG) */
+      --primary-hover: #0f3f22;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --whatsapp: #16a34a;
+      --whatsapp-hover: #15803d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 40px;
+    }
+
+    /* Cabeçalho */
+    header {
+      background-color: var(--primary);
+      color: #ffffff;
+      padding: 28px 16px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      max-width: 540px;
+      margin: 0 auto 14px;
+    }
+
+    .btn-header-whats {
+      display: inline-block;
+      background-color: rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      transition: background 0.2s;
+    }
+
+    .btn-header-whats:hover {
+      background-color: rgba(255, 255, 255, 0.28);
+    }
+
+    /* Aviso de Modo Demo */
+    .demo-banner {
+      background-color: #fef3c7;
+      color: #92400e;
+      text-align: center;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      border-bottom: 1px solid #fde68a;
+      display: none;
+    }
+
+    /* Container Principal */
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 20px 16px 0;
+    }
+
+    /* Barra de Busca */
+    .search-box {
+      margin-bottom: 14px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      background: #ffffff;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+    }
+
+    /* Filtros de Categoria */
+    .categories {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 18px;
+      scrollbar-width: none;
+    }
+
+    .categories::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-btn {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .cat-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    /* Grade de Produtos */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      transition: transform 0.15s;
+    }
+
+    .card.esgotado {
+      opacity: 0.72;
+    }
+
+    .card-img-wrap {
+      position: relative;
+      width: 100%;
+      height: 190px;
+      background-color: #e2e8f0;
+    }
+
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .badge-status {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .badge-disponivel {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-esgotado {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    .card-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-cat {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 14px;
+      flex: 1;
+    }
+
+    .card-price {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .btn-whats {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background-color: var(--whatsapp);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .btn-whats:hover {
+      background-color: var(--whatsapp-hover);
+    }
+
+    .btn-disabled {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background-color: #cbd5e1;
+      color: #475569;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: not-allowed;
+    }
+
+    .status-msg {
+      text-align: center;
+      padding: 40px 16px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="demoBanner" class="demo-banner">
+    Modo Demonstração: exibindo itens de exemplo. Cole o link CSV da Planilha Google no código para ativar.
+  </div>
+
+  <header>
+    <h1 id="storeName">Carregando...</h1>
+    <p id="storeSubtitle"></p>
+    <a id="headerWhatsLink" class="btn-header-whats" href="#" target="_blank" rel="noopener">
+      Tirar dúvidas no WhatsApp
+    </a>
+  </header>
+
+  <main class="container">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Buscar produto por nome ou descrição..." />
+    </div>
+
+    <div class="categories" id="categoryBar"></div>
+
+    <div id="statusMessage" class="status-msg">Carregando produtos...</div>
+    <div class="grid" id="productGrid"></div>
+  </main>
+
+  <footer>
+    Catálogo atualizado automaticamente • Pedido direto pelo WhatsApp
+  </footer>
+
+  <script>
+    // =========================================================================
+    // CONFIGURAÇÃO DO CLIENTE (EDITE APENAS ESTAS 5 LINHAS PARA CADA LOJA)
+    // =========================================================================
+    const CONFIG = {
+      nomeLoja: "Vibe Urbana — Moda & Acessórios",
+      subtitulo: "Moda casual feminina e acessórios com entrega em Anápolis",
+      whatsapp: "5562991234567",
+      corPrincipal: "#881337",
+      linkPlanilhaCSV: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRdwCbVMzF-JK739WaW9MolDA7aq5v4bMoZzfp0KIi-5TxkgIK6EUfTUunuxeko88Lh5l1eHb9D6ZWd/pub?gid=0&single=true&output=csv"
+    };
+    // =========================================================================
+
+    // Produtos de exemplo caso o link CSV ainda não tenha sido configurado
+    const DEMO_DATA = [
+      {
+        categoria: "Rações",
+        produto: "Ração Premium Cães Adultos 15kg",
+        descricao: "Alta digestibilidade, sabor carne e vegetais, pacote fechado.",
+        preco: "119,90",
+        foto: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?auto=format&fit=crop&w=600&q=80",
+        status: "Disponível"
+      },
+      {
+        categoria: "Ferramentas",
+        produto: "Pulverizador Costal Manual 20L",
+        descricao: "Tanque reforçado com bico regulável e trava contínua.",
+        preco: "185,00",
+        foto: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80",
+        status: "Disponível"
+      },
+      {
+        categoria: "Jardim & Horta",
+        produto: "Substrato Orgânico Vegetal 10kg",
+        descricao: "Pronto para uso em vasos, canteiros e mudas.",
+        preco: "32,50",
+        foto: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=600&q=80",
+        status: "Disponível"
+      },
+      {
+        categoria: "Acessórios",
+        produto: "Kit Jardinagem 3 Peças Aço",
+        descricao: "Pá larga, pazinha estreita e ancinho com cabo ergonômico.",
+        preco: "48,00",
+        foto: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=600&q=80",
+        status: "Esgotado"
+      }
+    ];
+
+    let allProducts = [];
+    let selectedCategory = "Todos";
+
+    // Aplica configurações visuais iniciais
+    function initBranding() {
+      document.documentElement.style.setProperty("--primary", CONFIG.corPrincipal);
+      document.title = CONFIG.nomeLoja + " — Catálogo Online";
+      document.getElementById("storeName").textContent = CONFIG.nomeLoja;
+      document.getElementById("storeSubtitle").textContent = CONFIG.subtitulo;
+
+      const cleanPhone = CONFIG.whatsapp.replace(/\D/g, "");
+      const defaultMsg = encodeURIComponent(`Olá! Vim pelo catálogo online da *${CONFIG.nomeLoja}* e gostaria de tirar uma dúvida.`);
+      document.getElementById("headerWhatsLink").href = `https://wa.me/${cleanPhone}?text=${defaultMsg}`;
+    }
+
+    // Parser CSV seguro (suporta vírgulas nos preços brasileiros e acentos)
+    function parseCSV(text) {
+      const cleanText = text.replace(/^\uFEFF/, ""); // Remove BOM do Google Sheets
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < cleanText.length; i++) {
+        const char = cleanText[i];
+        const nextChar = cleanText[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && nextChar === '"') {
+            cell += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === "," && !inQuotes) {
+          row.push(cell.trim());
+          cell = "";
+        } else if ((char === "\n" || (char === "\r" && nextChar === "\n")) && !inQuotes) {
+          if (char === "\r") i++;
+          row.push(cell.trim());
+          if (row.some(item => item !== "")) rows.push(row);
+          row = [];
+          cell = "";
+        } else {
+          cell += char;
+        }
+      }
+
+      if (cell.length > 0 || row.length > 0) {
+        row.push(cell.trim());
+        if (row.some(item => item !== "")) rows.push(row);
+      }
+
+      if (rows.length < 2) return [];
+
+      // Normaliza cabeçalhos (ignora maiúsculas e acentos)
+      const normalize = str => str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const headers = rows[0].map(normalize);
+
+      return rows.slice(1).map(r => {
+        const obj = {};
+        headers.forEach((h, idx) => {
+          obj[h] = r[idx] || "";
+        });
+        return {
+          categoria: obj.categoria || "Geral",
+          produto: obj.produto || "Produto sem nome",
+          descricao: obj.descricao || "",
+          preco: obj.preco || "Consultar",
+          foto: obj.foto || "",
+          status: obj.status || "Disponível"
+        };
+      });
+    }
+
+    // Formata o preço para exibição limpa
+    function formatPrice(rawPrice) {
+      const cleaned = rawPrice.replace(/R\$\s?/gi, "").trim();
+      if (!cleaned) return "Sob consulta";
+      if (/^[\d.,]+$/.test(cleaned)) {
+        return "R$ " + cleaned;
+      }
+      return rawPrice;
+    }
+
+    // Monta os botões de categoria dinamicamente
+    function renderCategories() {
+      const catBar = document.getElementById("categoryBar");
+      const uniqueCats = ["Todos", ...new Set(allProducts.map(p => p.categoria).filter(Boolean))];
+
+      catBar.innerHTML = uniqueCats.map(cat => `
+        <button class="cat-btn ${cat === selectedCategory ? "active" : ""}" onclick="selectCategory('${cat.replace(/'/g, "\\'")}')">
+          ${cat}
+        </button>
+      `).join("");
+    }
+
+    function selectCategory(cat) {
+      selectedCategory = cat;
+      renderCategories();
+      renderProducts();
+    }
+
+    // Renderiza os cards filtrados na tela
+    function renderProducts() {
+      const grid = document.getElementById("productGrid");
+      const statusMsg = document.getElementById("statusMessage");
+      const query = document.getElementById("searchInput").value.toLowerCase().trim();
+
+      const filtered = allProducts.filter(item => {
+        const matchCat = selectedCategory === "Todos" || item.categoria === selectedCategory;
+        const matchText =
+          item.produto.toLowerCase().includes(query) ||
+          item.descricao.toLowerCase().includes(query);
+        return matchCat && matchText;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = "";
+        statusMsg.style.display = "block";
+        statusMsg.textContent = "Nenhum produto encontrado para essa busca.";
+        return;
+      }
+
+      statusMsg.style.display = "none";
+      const cleanPhone = CONFIG.whatsapp.replace(/\D/g, "");
+      const placeholderImg = "https://via.placeholder.com/400x300/e2e8f0/64748b?text=Sem+Foto";
+
+      grid.innerHTML = filtered.map(item => {
+        const isOut = item.status.toLowerCase().includes("esgotado") || item.status.toLowerCase().includes("indispon");
+        const priceDisplay = formatPrice(item.preco);
+        const whatsText = encodeURIComponent(
+          `Olá! Vi no catálogo online e tenho interesse em:\n\n*${item.produto}*\nValor: ${priceDisplay}\n\nAinda está disponível?`
+        );
+        const whatsUrl = `https://wa.me/${cleanPhone}?text=${whatsText}`;
+
+        return `
+          <article class="card ${isOut ? "esgotado" : ""}">
+            <div class="card-img-wrap">
+              <img src="${item.foto || placeholderImg}" alt="${item.produto}" onerror="this.src='${placeholderImg}'" loading="lazy" />
+              <span class="badge-status ${isOut ? "badge-esgotado" : "badge-disponivel"}">
+                ${isOut ? "Esgotado" : "Disponível"}
+              </span>
+            </div>
+            <div class="card-body">
+              <span class="card-cat">${item.categoria}</span>
+              <h2 class="card-title">${item.produto}</h2>
+              <p class="card-desc">${item.descricao}</p>
+              <div class="card-price">${priceDisplay}</div>
+              ${
+                isOut
+                  ? `<span class="btn-disabled">Indisponível no momento</span>`
+                  : `<a class="btn-whats" href="${whatsUrl}" target="_blank" rel="noopener">Pedir no WhatsApp</a>`
+              }
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    // Carrega os dados da Planilha Google
+    async function loadCatalog() {
+      initBranding();
+      const statusMsg = document.getElementById("statusMessage");
+
+      if (!CONFIG.linkPlanilhaCSV || CONFIG.linkPlanilhaCSV.includes("COLE_AQUI")) {
+        document.getElementById("demoBanner").style.display = "block";
+        allProducts = DEMO_DATA;
+        renderCategories();
+        renderProducts();
+        return;
+      }
+
+      try {
+        // Adiciona timestamp para evitar cache antigo no navegador
+        const separator = CONFIG.linkPlanilhaCSV.includes("?") ? "&" : "?";
+        const response = await fetch(`${CONFIG.linkPlanilhaCSV}${separator}t=${Date.now()}`);
+        if (!response.ok) throw new Error("Falha ao acessar planilha.");
+
+        const csvText = await response.text();
+        allProducts = parseCSV(csvText);
+
+        if (allProducts.length === 0) {
+          statusMsg.textContent = "A planilha está vazia ou as colunas estão fora do padrão.";
+          return;
+        }
+
+        renderCategories();
+        renderProducts();
+      } catch (err) {
+        statusMsg.textContent = "Não foi possível carregar os produtos. Verifique se a planilha foi publicada na web como CSV.";
+        console.error(err);
+      }
+    }
+
+    document.getElementById("searchInput").addEventListener("input", renderProducts);
+    loadCatalog();
+  </script>
+</body>
+</html>
