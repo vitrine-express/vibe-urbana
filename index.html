@@ -501,7 +501,7 @@
 
       statusMsg.style.display = "none";
       const cleanPhone = CONFIG.whatsapp.replace(/\D/g, "");
-      const placeholderImg = "https://via.placeholder.com/400x300/e2e8f0/64748b?text=Sem+Foto";
+      const placeholderImg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'><rect width='400' height='400' fill='%23f1f5f9'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%2394a3b8'>Sem foto</text></svg>";
 
       grid.innerHTML = filtered.map(item => {
         const isOut = item.status.toLowerCase().includes("esgotado") || item.status.toLowerCase().includes("indispon");
