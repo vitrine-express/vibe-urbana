@@ -469,25 +469,24 @@
       return CONFIG.instagramUsuario.replace(/^@/, "").trim();
     }
 
-    // Abre direto a janela do Direct escapando do bloqueio do WebView do Instagram
+    // Abre o perfil nativamente sem travar o navegador interno do Instagram
     function openContact(event, message) {
       if (event) event.preventDefault();
 
       if (CONFIG.canalContato === "instagram") {
         const user = getCleanInsta();
-        // Tenta abrir a thread direta do Direct no app nativo do Android
-        const directDeepLink = `instagram://direct-thread?username=${user}`;
-        const directUniversalLink = `https://ig.me/m/${user}`;
+        const appUrl = `instagram://user?username=${user}`;
+        const webUrl = `https://www.instagram.com/${user}/`;
 
-        window.location.href = directDeepLink;
+        window.location.href = appUrl;
         setTimeout(() => {
-          window.top.location.href = directUniversalLink;
-        }, 400);
+          window.location.href = webUrl;
+        }, 450);
         return;
       }
 
       const whatsUrl = `https://wa.me/${getCleanPhone()}?text=${encodeURIComponent(message)}`;
-      window.top.location.href = whatsUrl;
+      window.location.href = whatsUrl;
     }
 
     function initBranding() {
@@ -648,7 +647,7 @@
 
         const safeMsg = rawMessage.replace(/'/g, "\\'").replace(/\n/g, "\\n");
         const btnLabel = CONFIG.canalContato === "instagram"
-          ? "Pedir no Instagram (Simulação)"
+          ? "Simular pedido (Abrir perfil)"
           : "Pedir no WhatsApp";
 
         return `
