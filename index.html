@@ -379,6 +379,84 @@
     footer a:hover {
       text-decoration: underline;
     }
+
+    /* Modal de Simulação para Lojistas */
+    .demo-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 17, 32, 0.82);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 9999;
+    }
+    .demo-modal-box {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 420px;
+      width: 100%;
+      padding: 22px;
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.3);
+      text-align: left;
+    }
+    .demo-modal-tag {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+    .demo-modal-box h3 {
+      font-size: 1.15rem;
+      color: #0b1120;
+      margin-bottom: 8px;
+    }
+    .demo-modal-box p {
+      font-size: 0.88rem;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+    .whats-preview-bubble {
+      background: #dcf8c6;
+      border-left: 4px solid #16a34a;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      color: #14532d;
+      white-space: pre-line;
+      margin-bottom: 16px;
+    }
+    .modal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .btn-modal-primary {
+      background: #f97316;
+      color: #ffffff;
+      text-align: center;
+      padding: 11px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-modal-close {
+      background: #f1f5f9;
+      color: #475569;
+      text-align: center;
+      padding: 9px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -423,6 +501,20 @@
     Catálogo atualizado automaticamente • Pedido direto pelo WhatsApp
   </footer>
 
+  <!-- Modal de Simulação de Pedido -->
+  <div id="demoModal" class="demo-modal-overlay" onclick="if(event.target===this) closeDemoModal()">
+    <div class="demo-modal-box">
+      <span class="demo-modal-tag">Simulação de Pedido</span>
+      <h3>Na sua loja, isso abre o seu WhatsApp!</h3>
+      <p>Como este é um catálogo modelo, não vinculamos um número de loja. Quando o cliente clicar no botão do seu catálogo, esta mensagem chegará pronta no seu WhatsApp:</p>
+      <div id="whatsPreviewText" class="whats-preview-bubble"></div>
+      <div class="modal-actions">
+        <button class="btn-modal-primary" onclick="goToInstagramProfile()">Quero criar o meu (Ir para o Instagram)</button>
+        <button class="btn-modal-close" onclick="closeDemoModal()">Continuar vendo o modelo</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // =========================================================================
     // CONFIGURAÇÃO DO CLIENTE
@@ -431,12 +523,30 @@
       nomeLoja: "Vibe Urbana — Moda & Acessórios",
       subtitulo: "Moda casual feminina e acessórios com entrega em Anápolis",
       canalContato: "instagram",          // "instagram" ou "whatsapp"
-      instagramUsuario: "vitrine_express.digital", // Coloque seu @ sem o símbolo @
+      instagramUsuario: "vitrine_express.digital",
       whatsapp: "5562994033297",
       corPrincipal: "#881337",
       modoDemonstracao: true,
       linkPlanilhaCSV: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRdwCbVMzF-JK739WaW9MolDA7aq5v4bMoZzfp0KIi-5TxkgIK6EUfTUunuxeko88Lh5l1eHb9D6ZWd/pub?gid=0&single=true&output=csv"
     };
+
+    function goToInstagramProfile() {
+      const user = CONFIG.instagramUsuario.replace(/^@/, "").trim();
+      window.location.href = `instagram://user?username=${user}`;
+      setTimeout(() => {
+        window.location.href = `https://www.instagram.com/${user}/`;
+      }, 450);
+    }
+
+    function openDemoPreview(productName, priceDisplay) {
+      const msg = `Olá! Vi no catálogo online da sua loja e tenho interesse em:\n\n*${productName}*\nValor: ${priceDisplay}\n\nAinda está disponível?`;
+      document.getElementById("whatsPreviewText").textContent = msg;
+      document.getElementById("demoModal").style.display = "flex";
+    }
+
+    function closeDemoModal() {
+      document.getElementById("demoModal").style.display = "none";
+    }
     // =========================================================================
 
     const DEMO_DATA = [
@@ -474,14 +584,7 @@
       if (event) event.preventDefault();
 
       if (CONFIG.canalContato === "instagram") {
-        const user = getCleanInsta();
-        const appUrl = `instagram://user?username=${user}`;
-        const webUrl = `https://www.instagram.com/${user}/`;
-
-        window.location.href = appUrl;
-        setTimeout(() => {
-          window.location.href = webUrl;
-        }, 450);
+        goToInstagramProfile();
         return;
       }
 
@@ -640,15 +743,19 @@
       grid.innerHTML = filtered.map(item => {
         const isOut = item.status.toLowerCase().includes("esgotado") || item.status.toLowerCase().includes("indispon");
         const priceDisplay = formatPrice(item.preco);
+        const safeTitle = item.produto.replace(/'/g, "\\'");
 
-        const rawMessage = CONFIG.modoDemonstracao
-          ? `Olá! Testei o catálogo modelo Vibe Urbana (simulei pedido de: *${item.produto}* - ${priceDisplay}) e quero criar o da minha loja!`
-          : `Olá! Vi no catálogo online e tenho interesse em:\n\n*${item.produto}*\nValor: ${priceDisplay}\n\nAinda está disponível?`;
-
+        const rawMessage = `Olá! Vi no catálogo online e tenho interesse em:\n\n*${item.produto}*\nValor: ${priceDisplay}\n\nAinda está disponível?`;
         const safeMsg = rawMessage.replace(/'/g, "\\'").replace(/\n/g, "\\n");
-        const btnLabel = CONFIG.canalContato === "instagram"
-          ? "Simular pedido (Abrir perfil)"
-          : "Pedir no WhatsApp";
+
+        let actionButtonHtml = `<span class="btn-disabled">Indisponível no momento</span>`;
+        if (!isOut) {
+          if (CONFIG.modoDemonstracao) {
+            actionButtonHtml = `<button type="button" class="btn-whats" onclick="openDemoPreview('${safeTitle}', '${priceDisplay}')">Simular Pedido no WhatsApp</button>`;
+          } else {
+            actionButtonHtml = `<a class="btn-whats" href="#" onclick="openContact(event, '${safeMsg}')">Pedir no WhatsApp</a>`;
+          }
+        }
 
         return `
           <article class="card ${isOut ? "esgotado" : ""}">
@@ -663,11 +770,7 @@
               <h2 class="card-title">${item.produto}</h2>
               <p class="card-desc">${item.descricao}</p>
               <div class="card-price">${priceDisplay}</div>
-              ${
-                isOut
-                  ? `<span class="btn-disabled">Indisponível no momento</span>`
-                  : `<a class="btn-whats" href="#" onclick="openContact(event, '${safeMsg}')">${btnLabel}</a>`
-              }
+              ${actionButtonHtml}
             </div>
           </article>
         `;
