@@ -430,8 +430,8 @@
     const CONFIG = {
       nomeLoja: "Vibe Urbana — Moda & Acessórios",
       subtitulo: "Moda casual feminina e acessórios com entrega em Anápolis",
-      canalContato: "instagram",          // "instagram" (Direct) ou "whatsapp" (para migrar no futuro)
-      instagramUsuario: "vitrine_express.digital", // Coloque seu @ sem o símbolo @ (ex: "vitrineexpress")
+      canalContato: "instagram",          // "instagram" ou "whatsapp"
+      instagramUsuario: "vitrine_express.digital", // Coloque seu @ sem o símbolo @
       whatsapp: "5562994033297",
       corPrincipal: "#881337",
       modoDemonstracao: true,
@@ -469,47 +469,68 @@
       return CONFIG.instagramUsuario.replace(/^@/, "").trim();
     }
 
-    // Gera o link correto dependendo do canal escolhido (Direct do Instagram ou WhatsApp)
-    function buildContactUrl(message) {
+    // Abre o perfil/Direct de forma compatível com o navegador interno do Instagram
+    function openContact(event, message) {
+      if (event) event.preventDefault();
+
       if (CONFIG.canalContato === "instagram") {
-        return `https://ig.me/m/${getCleanInsta()}`;
+        const user = getCleanInsta();
+        // Tenta abrir nativamente no app do Instagram; se falhar, abre a URL web na mesma janela
+        const appUrl = `instagram://user?username=${user}`;
+        const webUrl = `https://www.instagram.com/${user}/`;
+
+        window.location.href = appUrl;
+        setTimeout(() => {
+          window.location.href = webUrl;
+        }, 450);
+        return;
       }
-      return `https://wa.me/${getCleanPhone()}?text=${encodeURIComponent(message)}`;
+
+      const whatsUrl = `https://wa.me/${getCleanPhone()}?text=${encodeURIComponent(message)}`;
+      window.location.href = whatsUrl;
     }
 
-    // Aplica configurações visuais e links de conversão iniciais
     function initBranding() {
       document.documentElement.style.setProperty("--primary", CONFIG.corPrincipal);
       document.getElementById("storeName").textContent = CONFIG.nomeLoja;
       document.getElementById("storeSubtitle").textContent = CONFIG.subtitulo;
 
       const headerBtn = document.getElementById("headerWhatsLink");
+      const showcaseBtn = document.getElementById("veShowcaseCta");
 
       if (CONFIG.modoDemonstracao) {
         document.title = `${CONFIG.nomeLoja} (Vitrine Modelo) — Vitrine Express`;
-
         const leadMsg = "Olá! Testei o catálogo modelo Vibe Urbana e quero criar o da minha loja.";
-        const leadUrl = buildContactUrl(leadMsg);
 
         document.getElementById("veShowcaseBar").style.display = "block";
-        document.getElementById("veShowcaseCta").href = leadUrl;
+        showcaseBtn.removeAttribute("target");
+        showcaseBtn.href = "#";
+        showcaseBtn.onclick = (e) => openContact(e, leadMsg);
 
         headerBtn.textContent = CONFIG.canalContato === "instagram"
-          ? "Chamar no Direct para criar o meu"
+          ? "Chamar no perfil para criar o meu"
           : "Criar catálogo para minha loja";
-        headerBtn.href = leadUrl;
+        headerBtn.removeAttribute("target");
+        headerBtn.href = "#";
+        headerBtn.onclick = (e) => openContact(e, leadMsg);
 
-        document.getElementById("pageFooter").innerHTML = `
-          Vitrine Modelo demonstrativa • Criada com <a href="${leadUrl}" target="_blank" rel="noopener">Vitrine Express</a>
-        `;
+        const footerLink = document.createElement("a");
+        footerLink.href = "#";
+        footerLink.textContent = "Vitrine Express";
+        footerLink.onclick = (e) => openContact(e, leadMsg);
+
+        const footer = document.getElementById("pageFooter");
+        footer.innerHTML = "Vitrine Modelo demonstrativa • Criada com ";
+        footer.appendChild(footerLink);
       } else {
         document.title = CONFIG.nomeLoja + " — Catálogo Online";
         const defaultMsg = `Olá! Vim pelo catálogo online da *${CONFIG.nomeLoja}* e gostaria de tirar uma dúvida.`;
-        headerBtn.href = buildContactUrl(defaultMsg);
+        headerBtn.removeAttribute("target");
+        headerBtn.href = "#";
+        headerBtn.onclick = (e) => openContact(e, defaultMsg);
       }
     }
 
-    // Parser CSV seguro
     function parseCSV(text) {
       const cleanText = text.replace(/^\uFEFF/, "");
       const rows = [];
@@ -625,9 +646,9 @@
           ? `Olá! Testei o catálogo modelo Vibe Urbana (simulei pedido de: *${item.produto}* - ${priceDisplay}) e quero criar o da minha loja!`
           : `Olá! Vi no catálogo online e tenho interesse em:\n\n*${item.produto}*\nValor: ${priceDisplay}\n\nAinda está disponível?`;
 
-        const actionUrl = buildContactUrl(rawMessage);
+        const safeMsg = rawMessage.replace(/'/g, "\\'").replace(/\n/g, "\\n");
         const btnLabel = CONFIG.canalContato === "instagram"
-          ? "Pedir no Direct (Simulação)"
+          ? "Pedir no Instagram (Simulação)"
           : "Pedir no WhatsApp";
 
         return `
@@ -646,7 +667,7 @@
               ${
                 isOut
                   ? `<span class="btn-disabled">Indisponível no momento</span>`
-                  : `<a class="btn-whats" href="${actionUrl}" target="_blank" rel="noopener">${btnLabel}</a>`
+                  : `<a class="btn-whats" href="#" onclick="openContact(event, '${safeMsg}')">${btnLabel}</a>`
               }
             </div>
           </article>
