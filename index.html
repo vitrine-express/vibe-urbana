@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Catálogo Online</title>
+  <title>Vibe Urbana — Catálogo Modelo | Vitrine Express</title>
   <style>
     :root {
-      --primary: #14532d;       /* Cor principal (alterada via CONFIG) */
-      --primary-hover: #0f3f22;
+      --primary: #881337;
+      --primary-hover: #6b0f2b;
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #1e293b;
@@ -15,6 +15,10 @@
       --border: #e2e8f0;
       --whatsapp: #16a34a;
       --whatsapp-hover: #15803d;
+      --ve-navy: #0b1120;
+      --ve-cyan: #22d3ee;
+      --ve-orange: #f97316;
+      --ve-orange-hover: #ea580c;
     }
 
     * {
@@ -31,7 +35,76 @@
       padding-bottom: 40px;
     }
 
-    /* Cabeçalho */
+    /* Faixa de Demonstração Vitrine Express */
+    .ve-showcase-bar {
+      background-color: var(--ve-navy);
+      color: #f8fafc;
+      padding: 10px 16px;
+      border-bottom: 2px solid var(--ve-cyan);
+      display: none;
+    }
+
+    .ve-showcase-inner {
+      max-width: 1040px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .ve-showcase-text {
+      font-size: 0.84rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .ve-badge {
+      background: rgba(34, 211, 238, 0.15);
+      color: var(--ve-cyan);
+      border: 1px solid rgba(34, 211, 238, 0.4);
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .ve-cta-btn {
+      background-color: var(--ve-orange);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    .ve-cta-btn:hover {
+      background-color: var(--ve-orange-hover);
+    }
+
+    @media (max-width: 520px) {
+      .ve-showcase-inner {
+        justify-content: center;
+        text-align: center;
+      }
+      .ve-showcase-text {
+        justify-content: center;
+      }
+      .ve-cta-btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    /* Cabeçalho da Loja */
     header {
       background-color: var(--primary);
       color: #ffffff;
@@ -69,7 +142,7 @@
       background-color: rgba(255, 255, 255, 0.28);
     }
 
-    /* Aviso de Modo Demo */
+    /* Aviso de Planilha não configurada */
     .demo-banner {
       background-color: #fef3c7;
       color: #92400e;
@@ -141,7 +214,7 @@
       border-color: var(--primary);
     }
 
-    /* Grade de Produtos (2 colunas no celular, até 4 no computador) */
+    /* Grade de Produtos */
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -169,7 +242,6 @@
       opacity: 0.72;
     }
 
-    /* Caixa Quadrada 1:1 com foco centralizado */
     .card-img-wrap {
       position: relative;
       width: 100%;
@@ -282,6 +354,7 @@
       font-weight: 600;
       cursor: not-allowed;
     }
+
     .status-msg {
       text-align: center;
       padding: 40px 16px;
@@ -292,12 +365,36 @@
     footer {
       text-align: center;
       margin-top: 40px;
-      font-size: 0.8rem;
+      padding: 0 16px;
+      font-size: 0.82rem;
       color: var(--muted);
+    }
+
+    footer a {
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
+
+  <!-- Barra de identificação de Vitrine Modelo -->
+  <div id="veShowcaseBar" class="ve-showcase-bar">
+    <div class="ve-showcase-inner">
+      <div class="ve-showcase-text">
+        <span class="ve-badge">Vitrine Modelo</span>
+        <span>Exemplo real criado com a <strong>Vitrine Express</strong></span>
+      </div>
+      <a id="veShowcaseCta" class="ve-cta-btn" href="#" target="_blank" rel="noopener">
+        Quero um catálogo assim
+      </a>
+    </div>
+  </div>
 
   <div id="demoBanner" class="demo-banner">
     Modo Demonstração: exibindo itens de exemplo. Cole o link CSV da Planilha Google no código para ativar.
@@ -322,77 +419,88 @@
     <div class="grid" id="productGrid"></div>
   </main>
 
-  <footer>
+  <footer id="pageFooter">
     Catálogo atualizado automaticamente • Pedido direto pelo WhatsApp
   </footer>
 
   <script>
     // =========================================================================
-    // CONFIGURAÇÃO DO CLIENTE (EDITE APENAS ESTAS 5 LINHAS PARA CADA LOJA)
+    // CONFIGURAÇÃO DO CLIENTE
     // =========================================================================
     const CONFIG = {
       nomeLoja: "Vibe Urbana — Moda & Acessórios",
       subtitulo: "Moda casual feminina e acessórios com entrega em Anápolis",
-      whatsapp: "https://wa.me/5562994033297?text=Ol%C3%A1!%20Testei%20o%20cat%C3%A1logo%20modelo%20Vibe%20Urbana%20e%20quero%20criar%20o%20da%20minha%20loja.",
+      whatsapp: "5562994033297",
       corPrincipal: "#881337",
+      modoDemonstracao: true, // true = exibe aviso de modelo e capta leads para a Vitrine Express
       linkPlanilhaCSV: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRdwCbVMzF-JK739WaW9MolDA7aq5v4bMoZzfp0KIi-5TxkgIK6EUfTUunuxeko88Lh5l1eHb9D6ZWd/pub?gid=0&single=true&output=csv"
     };
     // =========================================================================
 
-    // Produtos de exemplo caso o link CSV ainda não tenha sido configurado
     const DEMO_DATA = [
       {
-        categoria: "Rações",
-        produto: "Ração Premium Cães Adultos 15kg",
-        descricao: "Alta digestibilidade, sabor carne e vegetais, pacote fechado.",
+        categoria: "Vestidos",
+        produto: "Vestido Midi Canelado",
+        descricao: "Malha canelada premium com ótimo caimento, tamanhos P ao G.",
         preco: "119,90",
-        foto: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?auto=format&fit=crop&w=600&q=80",
+        foto: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=600&q=80",
         status: "Disponível"
       },
       {
-        categoria: "Ferramentas",
-        produto: "Pulverizador Costal Manual 20L",
-        descricao: "Tanque reforçado com bico regulável e trava contínua.",
-        preco: "185,00",
-        foto: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80",
+        categoria: "Conjuntos",
+        produto: "Conjunto Alfaiataria Linho",
+        descricao: "Cropped estruturado + short cintura alta com bolso.",
+        preco: "169,00",
+        foto: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=600&q=80",
         status: "Disponível"
-      },
-      {
-        categoria: "Jardim & Horta",
-        produto: "Substrato Orgânico Vegetal 10kg",
-        descricao: "Pronto para uso em vasos, canteiros e mudas.",
-        preco: "32,50",
-        foto: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=600&q=80",
-        status: "Disponível"
-      },
-      {
-        categoria: "Acessórios",
-        produto: "Kit Jardinagem 3 Peças Aço",
-        descricao: "Pá larga, pazinha estreita e ancinho com cabo ergonômico.",
-        preco: "48,00",
-        foto: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=600&q=80",
-        status: "Esgotado"
       }
     ];
 
     let allProducts = [];
     let selectedCategory = "Todos";
 
-    // Aplica configurações visuais iniciais
+    function getCleanPhone() {
+      return CONFIG.whatsapp.replace(/\D/g, "");
+    }
+
+    // Aplica configurações visuais e links de conversão iniciais
     function initBranding() {
       document.documentElement.style.setProperty("--primary", CONFIG.corPrincipal);
-      document.title = CONFIG.nomeLoja + " — Catálogo Online";
       document.getElementById("storeName").textContent = CONFIG.nomeLoja;
       document.getElementById("storeSubtitle").textContent = CONFIG.subtitulo;
 
-      const cleanPhone = CONFIG.whatsapp.replace(/\D/g, "");
-      const defaultMsg = encodeURIComponent(`Olá! Vim pelo catálogo online da *${CONFIG.nomeLoja}* e gostaria de tirar uma dúvida.`);
-      document.getElementById("headerWhatsLink").href = `https://wa.me/${cleanPhone}?text=${defaultMsg}`;
+      const cleanPhone = getCleanPhone();
+      const headerBtn = document.getElementById("headerWhatsLink");
+
+      if (CONFIG.modoDemonstracao) {
+        document.title = `${CONFIG.nomeLoja} (Vitrine Modelo) — Vitrine Express`;
+
+        const leadMsg = encodeURIComponent(
+          "Olá! Testei o catálogo modelo Vibe Urbana e quero criar o da minha loja."
+        );
+        const leadUrl = `https://wa.me/${cleanPhone}?text=${leadMsg}`;
+
+        document.getElementById("veShowcaseBar").style.display = "block";
+        document.getElementById("veShowcaseCta").href = leadUrl;
+
+        headerBtn.textContent = "Criar catálogo para minha loja";
+        headerBtn.href = leadUrl;
+
+        document.getElementById("pageFooter").innerHTML = `
+          Vitrine Modelo demonstrativa • Criada com <a href="${leadUrl}" target="_blank" rel="noopener">Vitrine Express</a>
+        `;
+      } else {
+        document.title = CONFIG.nomeLoja + " — Catálogo Online";
+        const defaultMsg = encodeURIComponent(
+          `Olá! Vim pelo catálogo online da *${CONFIG.nomeLoja}* e gostaria de tirar uma dúvida.`
+        );
+        headerBtn.href = `https://wa.me/${cleanPhone}?text=${defaultMsg}`;
+      }
     }
 
-    // Parser CSV seguro (suporta vírgulas nos preços brasileiros e acentos)
+    // Parser CSV seguro
     function parseCSV(text) {
-      const cleanText = text.replace(/^\uFEFF/, ""); // Remove BOM do Google Sheets
+      const cleanText = text.replace(/^\uFEFF/, "");
       const rows = [];
       let row = [];
       let cell = "";
@@ -430,7 +538,6 @@
 
       if (rows.length < 2) return [];
 
-      // Normaliza cabeçalhos (ignora maiúsculas e acentos)
       const normalize = str => str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const headers = rows[0].map(normalize);
 
@@ -450,7 +557,6 @@
       });
     }
 
-    // Formata o preço para exibição limpa
     function formatPrice(rawPrice) {
       const cleaned = rawPrice.replace(/R\$\s?/gi, "").trim();
       if (!cleaned) return "Sob consulta";
@@ -460,7 +566,6 @@
       return rawPrice;
     }
 
-    // Monta os botões de categoria dinamicamente
     function renderCategories() {
       const catBar = document.getElementById("categoryBar");
       const uniqueCats = ["Todos", ...new Set(allProducts.map(p => p.categoria).filter(Boolean))];
@@ -478,7 +583,6 @@
       renderProducts();
     }
 
-    // Renderiza os cards filtrados na tela
     function renderProducts() {
       const grid = document.getElementById("productGrid");
       const statusMsg = document.getElementById("statusMessage");
@@ -500,16 +604,18 @@
       }
 
       statusMsg.style.display = "none";
-      const cleanPhone = CONFIG.whatsapp.replace(/\D/g, "");
+      const cleanPhone = getCleanPhone();
       const placeholderImg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'><rect width='400' height='400' fill='%23f1f5f9'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%2394a3b8'>Sem foto</text></svg>";
 
       grid.innerHTML = filtered.map(item => {
         const isOut = item.status.toLowerCase().includes("esgotado") || item.status.toLowerCase().includes("indispon");
         const priceDisplay = formatPrice(item.preco);
-        const whatsText = encodeURIComponent(
-          `Olá! Vi no catálogo online e tenho interesse em:\n\n*${item.produto}*\nValor: ${priceDisplay}\n\nAinda está disponível?`
-        );
-        const whatsUrl = `https://wa.me/${cleanPhone}?text=${whatsText}`;
+
+        const rawMessage = CONFIG.modoDemonstracao
+          ? `Olá! Testei o catálogo modelo Vibe Urbana (simulei pedido de: *${item.produto}* - ${priceDisplay}) e quero criar o da minha loja!`
+          : `Olá! Vi no catálogo online e tenho interesse em:\n\n*${item.produto}*\nValor: ${priceDisplay}\n\nAinda está disponível?`;
+
+        const whatsUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(rawMessage)}`;
 
         return `
           <article class="card ${isOut ? "esgotado" : ""}">
@@ -535,7 +641,6 @@
       }).join("");
     }
 
-    // Carrega os dados da Planilha Google
     async function loadCatalog() {
       initBranding();
       const statusMsg = document.getElementById("statusMessage");
@@ -549,7 +654,6 @@
       }
 
       try {
-        // Adiciona timestamp para evitar cache antigo no navegador
         const separator = CONFIG.linkPlanilhaCSV.includes("?") ? "&" : "?";
         const response = await fetch(`${CONFIG.linkPlanilhaCSV}${separator}t=${Date.now()}`);
         if (!response.ok) throw new Error("Falha ao acessar planilha.");
