@@ -469,25 +469,25 @@
       return CONFIG.instagramUsuario.replace(/^@/, "").trim();
     }
 
-    // Abre o perfil/Direct de forma compatível com o navegador interno do Instagram
+    // Abre direto a janela do Direct escapando do bloqueio do WebView do Instagram
     function openContact(event, message) {
       if (event) event.preventDefault();
 
       if (CONFIG.canalContato === "instagram") {
         const user = getCleanInsta();
-        // Tenta abrir nativamente no app do Instagram; se falhar, abre a URL web na mesma janela
-        const appUrl = `instagram://user?username=${user}`;
-        const webUrl = `https://www.instagram.com/${user}/`;
+        // Tenta abrir a thread direta do Direct no app nativo do Android
+        const directDeepLink = `instagram://direct-thread?username=${user}`;
+        const directUniversalLink = `https://ig.me/m/${user}`;
 
-        window.location.href = appUrl;
+        window.location.href = directDeepLink;
         setTimeout(() => {
-          window.location.href = webUrl;
-        }, 450);
+          window.top.location.href = directUniversalLink;
+        }, 400);
         return;
       }
 
       const whatsUrl = `https://wa.me/${getCleanPhone()}?text=${encodeURIComponent(message)}`;
-      window.location.href = whatsUrl;
+      window.top.location.href = whatsUrl;
     }
 
     function initBranding() {
